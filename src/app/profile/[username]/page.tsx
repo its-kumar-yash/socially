@@ -1,19 +1,24 @@
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import ProfilePageClient from './ProfilePageClient';
 import {
   getProfileByUsername,
   getUserLikedPosts,
   getUserPosts,
   isFollowing,
-} from "@/actions/profile.action";
-import { notFound } from "next/navigation";
-import React from "react";
-import ProfilePageClient from "./ProfilePageClient";
+} from '@/actions/profile.action';
 
+// Define the type for params as a Promise
+type ProfilePageParams = Promise<{ username: string }>;
+
+// Dynamic metadata generation
 export async function generateMetadata({
   params,
 }: {
-  params: { username: string };
-}) {
-  const user = await getProfileByUsername(params.username);
+  params: ProfilePageParams;
+}): Promise<Metadata | undefined> {
+  const { username } = await params;
+  const user = await getProfileByUsername(username);
   if (!user) return;
   return {
     title: `${user.name ?? user.username}`,
@@ -21,12 +26,14 @@ export async function generateMetadata({
   };
 }
 
+// Server component for the profile page
 export default async function ProfilePageServer({
   params,
 }: {
-  params: { username: string };
+  params: ProfilePageParams;
 }) {
-  const user = await getProfileByUsername(params.username);
+  const { username } = await params;
+  const user = await getProfileByUsername(username);
   if (!user) notFound();
   const [posts, likedPosts, isCurrentUserFollowing] = await Promise.all([
     getUserPosts(user.id),
