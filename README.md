@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Socially
 
-## Getting Started
+## Description
+Socially is a full-stack social media application that allows users to connect, share posts, and interact with each other. This project is built using modern web technologies and follows best practices for scalable and maintainable code.
 
-First, run the development server:
+## Features
+- 🔒 User authentication and authorization
+- 👤 Profile management
+- 📝 Post creation, editing, and deletion
+- 💬 Commenting and liking posts
+- 🔔 Real-time notifications
+- 📱 Responsive design
+- ⚡ Optimistic Updates
+- 📤 File Uploads with Cloudinary
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tools Used
+- 🟢 Next.js
+- 🚀 Prisma
+- 🍃 Postgres
+- ⚛️ Tailwind CSS
+- 🛠️ Cloudinary
+- 🔥 Clerk
+- 🎨 Shadcn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/socially.git
+    ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Navigate to the project directory:
+    ```bash
+    cd socially
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Install dependencies:
+    ```bash
+    npm install
+    ```
 
-## Learn More
+4. Setup the `.env` file with the following variables:
+    ```plaintext
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+    CLERK_SECRET_KEY=
+    DATABASE_URL=
+    UPLOADTHING_TOKEN=
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+5. Run the app:
+    ```bash
+    npm run dev
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+Distributed under the MIT License. See `LICENSE` for more information.
