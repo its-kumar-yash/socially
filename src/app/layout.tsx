@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Socially",
   description: "A modern social media application powered by Next.js",
+  icons: {
+    icon: "/icon.png"
+  }
 };
 
 export default function RootLayout({
