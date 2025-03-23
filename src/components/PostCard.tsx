@@ -14,7 +14,12 @@ import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "./ui/button";
-import { HeartIcon, LogInIcon, MessageCircleIcon, SendIcon } from "lucide-react";
+import {
+  HeartIcon,
+  LogInIcon,
+  MessageCircleIcon,
+  SendIcon,
+} from "lucide-react";
 import { DeleteAlertDialog } from "./DeleteAlertDialog";
 import { Textarea } from "./ui/textarea";
 
@@ -94,7 +99,10 @@ export default function PostCard({
           <div className="flex space-x-3 sm:space-x-4">
             <Link href={`/profile/${post.author.username}`}>
               <Avatar className="size-3 sm:w-10 sm:h-10">
-                <AvatarImage src={post.author.image ?? "/avatar.png"} className="w-10 h-10 rounded-full" />
+                <AvatarImage
+                  src={post.author.image ?? "/avatar.png"}
+                  className="w-10 h-10 rounded-full"
+                />
               </Avatar>
             </Link>
 
@@ -109,24 +117,37 @@ export default function PostCard({
                     {post.author.name}
                   </Link>
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Link href={`/profile/${post.author.username}`}>@{post.author.username}</Link>
+                    <Link href={`/profile/${post.author.username}`}>
+                      @{post.author.username}
+                    </Link>
                     <span>•</span>
-                    <span>{formatDistanceToNow(new Date(post.createdAt))} ago</span>
+                    <span>
+                      {formatDistanceToNow(new Date(post.createdAt))} ago
+                    </span>
                   </div>
                 </div>
                 {/* Check if current user is the post author */}
                 {dbUserId === post.author.id && (
-                  <DeleteAlertDialog isDeleting={isDeleting} onDelete={handleDeletePost} />
+                  <DeleteAlertDialog
+                    isDeleting={isDeleting}
+                    onDelete={handleDeletePost}
+                  />
                 )}
               </div>
-              <p className="mt-2 text-sm text-foreground break-words">{post.content}</p>
+              <p className="mt-2 text-sm text-foreground break-words">
+                {post.content}
+              </p>
             </div>
           </div>
 
           {/* POST IMAGE */}
           {post.image && (
             <div className="rounded-lg overflow-hidden">
-              <img src={post.image} alt="Post content" className="w-full h-auto object-cover" />
+              <img
+                src={post.image}
+                alt="Post content"
+                className="w-full h-auto object-cover"
+              />
             </div>
           )}
 
@@ -137,7 +158,9 @@ export default function PostCard({
                 variant="ghost"
                 size="sm"
                 className={`text-muted-foreground gap-2 ${
-                  hasLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
+                  hasLiked
+                    ? "text-red-500 hover:text-red-600"
+                    : "hover:text-red-500"
                 }`}
                 onClick={handleLike}
               >
@@ -150,7 +173,11 @@ export default function PostCard({
               </Button>
             ) : (
               <SignInButton mode="modal">
-                <Button variant="ghost" size="sm" className="text-muted-foreground gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground gap-2"
+                >
                   <HeartIcon className="size-5" />
                   <span>{optimisticLikes}</span>
                 </Button>
@@ -164,7 +191,9 @@ export default function PostCard({
               onClick={() => setShowComments((prev) => !prev)}
             >
               <MessageCircleIcon
-                className={`size-5 ${showComments ? "fill-blue-500 text-blue-500" : ""}`}
+                className={`size-5 ${
+                  showComments ? "fill-blue-500 text-blue-500" : ""
+                }`}
               />
               <span>{post.comments.length}</span>
             </Button>
@@ -177,12 +206,19 @@ export default function PostCard({
                 {/* DISPLAY COMMENTS */}
                 {post.comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
-                    <Avatar className="size-8 flex-shrink-0">
-                      <AvatarImage src={comment.author.image ?? "/avatar.png"} className="w-8 h-8 rounded-full" />
-                    </Avatar>
+                    <Link href={`/profile/${user?.username}`}>
+                      <Avatar className="size-8 flex-shrink-0">
+                        <AvatarImage
+                          src={comment.author.image ?? "/avatar.png"}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      </Avatar>
+                    </Link>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="font-medium text-sm">{comment.author.name}</span>
+                        <span className="font-medium text-sm">
+                          {comment.author.name}
+                        </span>
                         <span className="text-sm text-muted-foreground">
                           @{comment.author.username}
                         </span>
@@ -199,9 +235,14 @@ export default function PostCard({
 
               {user ? (
                 <div className="flex space-x-3">
-                  <Avatar className="size-8 flex-shrink-0">
-                    <AvatarImage src={user?.imageUrl || "/avatar.png"} className="w-8 h-8 rounded-full" />
-                  </Avatar>
+                  <Link href={`/profile/${user.username}`}>
+                    <Avatar className="size-8 flex-shrink-0">
+                      <AvatarImage
+                        src={user?.imageUrl || "/avatar.png"}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    </Avatar>
+                  </Link>
                   <div className="flex-1">
                     <Textarea
                       placeholder="Write a comment..."
