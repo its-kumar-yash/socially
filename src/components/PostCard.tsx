@@ -1,47 +1,29 @@
 "use client";
 
-import {
-  createComment,
-  deletePost,
-  getPosts,
-  toggleLike,
-} from "@/actions/post.action";
+import { createComment, deletePost, getPosts, toggleLike } from "@/actions/post.action";
 import { SignInButton, useUser } from "@clerk/nextjs";
-import { formatDistanceToNow } from "date-fns";
-import React, { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
-import { Button } from "./ui/button";
-import {
-  HeartIcon,
-  LogInIcon,
-  MessageCircleIcon,
-  SendIcon,
-} from "lucide-react";
+import { Avatar, AvatarImage } from "./ui/avatar";
+import { formatDistanceToNow } from "date-fns";
 import { DeleteAlertDialog } from "./DeleteAlertDialog";
+import { Button } from "./ui/button";
+import { HeartIcon, LogInIcon, MessageCircleIcon, SendIcon } from "lucide-react";
 import { Textarea } from "./ui/textarea";
 
-type Posts = Awaited<ReturnType<typeof getPosts>>;
-type Post = Posts["posts"][number];
+type Posts = Awaited<ReturnType<typeof getPosts>>["posts"];
+type Post = Posts[number];
 
-export default function PostCard({
-  post,
-  dbUserId,
-}: {
-  post: Post;
-  dbUserId: string | null;
-}) {
+function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
   const { user } = useUser();
   const [newComment, setNewComment] = useState("");
   const [isCommenting, setIsCommenting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [hasLiked, setHasLiked] = useState(
-    post.likes.some((like) => like.userId === dbUserId)
-  );
-  const [optimisticLikes, setOptimisticLikes] = useState(post._count.likes);
+  const [hasLiked, setHasLiked] = useState(post.likes.some((like) => like.userId === dbUserId));
+  const [optimisticLikes, setOptmisticLikes] = useState(post._count.likes);
   const [showComments, setShowComments] = useState(false);
 
   const handleLike = async () => {
@@ -49,10 +31,10 @@ export default function PostCard({
     try {
       setIsLiking(true);
       setHasLiked((prev) => !prev);
-      setOptimisticLikes((prev) => prev + (hasLiked ? -1 : 1));
+      setOptmisticLikes((prev) => prev + (hasLiked ? -1 : 1));
       await toggleLike(post.id);
     } catch (error) {
-      setOptimisticLikes(post._count.likes);
+      setOptmisticLikes(post._count.likes);
       setHasLiked(post.likes.some((like) => like.userId === dbUserId));
     } finally {
       setIsLiking(false);
@@ -60,7 +42,7 @@ export default function PostCard({
   };
 
   const handleAddComment = async () => {
-    if (!newComment || isCommenting) return;
+    if (!newComment.trim() || isCommenting) return;
     try {
       setIsCommenting(true);
       const result = await createComment(post.id, newComment);
@@ -68,7 +50,7 @@ export default function PostCard({
         toast.success("Comment posted successfully");
         setNewComment("");
       }
-    } catch (e) {
+    } catch (error) {
       toast.error("Failed to add comment");
     } finally {
       setIsCommenting(false);
@@ -80,12 +62,9 @@ export default function PostCard({
     try {
       setIsDeleting(true);
       const result = await deletePost(post.id);
-      if (result.success) {
-        toast.success("Post deleted successfully");
-      } else {
-        toast.error("Failed to delete post");
-      }
-    } catch (e) {
+      if (result.success) toast.success("Post deleted successfully");
+      else throw new Error(result.error);
+    } catch (error) {
       toast.error("Failed to delete post");
     } finally {
       setIsDeleting(false);
@@ -93,16 +72,13 @@ export default function PostCard({
   };
 
   return (
-    <Card className="!p-0 overflow-hidden">
+    <Card className="overflow-hidden !py-0">
       <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
           <div className="flex space-x-3 sm:space-x-4">
             <Link href={`/profile/${post.author.username}`}>
-              <Avatar className="size-3 sm:w-10 sm:h-10">
-                <AvatarImage
-                  src={post.author.image ?? "/avatar.png"}
-                  className="w-10 h-10 rounded-full"
-                />
+              <Avatar className="size-8 sm:w-10 sm:h-10">
+                <AvatarImage src={post.author.image ?? "/avatar.png"} />
               </Avatar>
             </Link>
 
@@ -117,37 +93,24 @@ export default function PostCard({
                     {post.author.name}
                   </Link>
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Link href={`/profile/${post.author.username}`}>
-                      @{post.author.username}
-                    </Link>
+                    <Link href={`/profile/${post.author.username}`}>@{post.author.username}</Link>
                     <span>•</span>
-                    <span>
-                      {formatDistanceToNow(new Date(post.createdAt))} ago
-                    </span>
+                    <span>{formatDistanceToNow(new Date(post.createdAt))} ago</span>
                   </div>
                 </div>
                 {/* Check if current user is the post author */}
                 {dbUserId === post.author.id && (
-                  <DeleteAlertDialog
-                    isDeleting={isDeleting}
-                    onDelete={handleDeletePost}
-                  />
+                  <DeleteAlertDialog isDeleting={isDeleting} onDelete={handleDeletePost} />
                 )}
               </div>
-              <p className="mt-2 text-sm text-foreground break-words">
-                {post.content}
-              </p>
+              <p className="mt-2 text-sm text-foreground break-words">{post.content}</p>
             </div>
           </div>
 
           {/* POST IMAGE */}
           {post.image && (
             <div className="rounded-lg overflow-hidden">
-              <img
-                src={post.image}
-                alt="Post content"
-                className="w-full h-auto object-cover"
-              />
+              <img src={post.image} alt="Post content" className="w-full h-auto object-cover" />
             </div>
           )}
 
@@ -158,9 +121,7 @@ export default function PostCard({
                 variant="ghost"
                 size="sm"
                 className={`text-muted-foreground gap-2 ${
-                  hasLiked
-                    ? "text-red-500 hover:text-red-600"
-                    : "hover:text-red-500"
+                  hasLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
                 }`}
                 onClick={handleLike}
               >
@@ -173,11 +134,7 @@ export default function PostCard({
               </Button>
             ) : (
               <SignInButton mode="modal">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground gap-2"
-                >
+                <Button variant="ghost" size="sm" className="text-muted-foreground gap-2">
                   <HeartIcon className="size-5" />
                   <span>{optimisticLikes}</span>
                 </Button>
@@ -191,9 +148,7 @@ export default function PostCard({
               onClick={() => setShowComments((prev) => !prev)}
             >
               <MessageCircleIcon
-                className={`size-5 ${
-                  showComments ? "fill-blue-500 text-blue-500" : ""
-                }`}
+                className={`size-5 ${showComments ? "fill-blue-500 text-blue-500" : ""}`}
               />
               <span>{post.comments.length}</span>
             </Button>
@@ -206,19 +161,12 @@ export default function PostCard({
                 {/* DISPLAY COMMENTS */}
                 {post.comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
-                    <Link href={`/profile/${user?.username}`}>
-                      <Avatar className="size-8 flex-shrink-0">
-                        <AvatarImage
-                          src={comment.author.image ?? "/avatar.png"}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      </Avatar>
-                    </Link>
+                    <Avatar className="size-8 flex-shrink-0">
+                      <AvatarImage src={comment.author.image ?? "/avatar.png"} />
+                    </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="font-medium text-sm">
-                          {comment.author.name}
-                        </span>
+                        <span className="font-medium text-sm">{comment.author.name}</span>
                         <span className="text-sm text-muted-foreground">
                           @{comment.author.username}
                         </span>
@@ -235,20 +183,15 @@ export default function PostCard({
 
               {user ? (
                 <div className="flex space-x-3">
-                  <Link href={`/profile/${user.username}`}>
-                    <Avatar className="size-8 flex-shrink-0">
-                      <AvatarImage
-                        src={user?.imageUrl || "/avatar.png"}
-                        className="w-8 h-8 rounded-full"
-                      />
-                    </Avatar>
-                  </Link>
+                  <Avatar className="size-8 flex-shrink-0">
+                    <AvatarImage src={user?.imageUrl || "/avatar.png"} />
+                  </Avatar>
                   <div className="flex-1">
                     <Textarea
                       placeholder="Write a comment..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
-                      className="min-h-[80px] resize-none !bg-transparent"
+                      className="min-h-[80px] resize-none"
                     />
                     <div className="flex justify-end mt-2">
                       <Button
@@ -286,3 +229,4 @@ export default function PostCard({
     </Card>
   );
 }
+export default PostCard;
