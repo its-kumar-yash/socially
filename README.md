@@ -25,7 +25,7 @@ Socially is a full-stack social media application that allows users to connect, 
 ## Setup
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/socially.git
+    git clone https://github.com/its-kumar-yash/socially
     ```
 
 2. Navigate to the project directory:
